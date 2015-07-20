@@ -26,7 +26,8 @@ module Devise
 
         if resource.new_record?
           if validate(resource) { resource.valid_ldap_authentication?(password) }
-            return fail(:not_found_in_database) # Valid credentials
+	    success!(resource)
+            #return fail(:not_found_in_database) # Valid credentials
           else
             return fail(:invalid) # Invalid credentials
           end
