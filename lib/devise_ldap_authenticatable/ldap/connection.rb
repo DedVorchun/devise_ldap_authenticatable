@@ -239,6 +239,26 @@ module Devise
         DeviseLdapAuthenticatable::Logger.send("Modifying user #{dn}")
         privileged_ldap.modify(:dn => dn, :operations => operations)
       end
+
+      def get_users()
+        ar = []
+	str = ''
+        @ldap.search( :base => treebase) do |entry|
+          puts "DN: #{entry.dn}"
+          entry.each do |attribute, values|
+            #if attribute.to_s == 'displayname' || attribute.to_s == 'cn'
+            if attribute.to_s == 'displayname'
+	      str = ''
+              values.each do |value|
+                str += value.to_s
+              end
+            end
+          end
+          ar << [entry.dn.to_s, str]
+        end
+        return ar
+      end
+
     end
   end
 end
