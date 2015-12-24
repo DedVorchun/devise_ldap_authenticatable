@@ -46,8 +46,8 @@ module Devise
       def get_users(treebase)
         ar = []
         str = ''
+        cn = ''
         @ldap.search( :base => treebase) do |entry|
-          puts "DN: #{entry.dn}"
           entry.each do |attribute, values|
             if attribute.to_s == 'displayname'
               str = ''
@@ -55,10 +55,18 @@ module Devise
                 str += value.to_s
               end
             end
+            if attribute.to_s == 'cn'
+              cn = ''
+              values.each do |value|
+                cn += value.to_s
+              end
+            end
           end
-          ar << [entry.dn.to_s, str]
+          if !cn.blank? && !str.blank?
+            ar << {:cn => cn, :name => str}
+          end
         end
-        return ar
+        return ar.uniq{ |x| x[:cn] }
       end
 
       def delete_param(param)
